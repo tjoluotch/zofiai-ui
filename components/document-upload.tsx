@@ -1,95 +1,99 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Upload, Download, X } from "lucide-react"
-import { Tabs, TabsContent } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { Upload, Download, X } from "lucide-react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
 export default function DocumentUpload() {
-  const [dragActive, setDragActive] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [fileCleared, setFileCleared] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [dragActive, setDragActive] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fileCleared, setFileCleared] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true)
+      setDragActive(true);
     } else if (e.type === "dragleave") {
-      setDragActive(false)
+      setDragActive(false);
     }
-  }
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0])
-      setFileCleared(false)
+      setFile(e.dataTransfer.files[0]);
+      setFileCleared(false);
     }
-  }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0])
-      setFileCleared(false)
+      setFile(e.target.files[0]);
+      setFileCleared(false);
     }
-  }
+  };
 
   const handleSubmit = async () => {
-    setIsSubmitting(true)
-    setError(null)
+    setIsSubmitting(true);
+    setError(null);
 
     try {
       if (!file) {
-        throw new Error("No file selected")
+        throw new Error("No file selected");
       }
 
-      const formData = new FormData()
-      formData.append("file", file)
+      const formData = new FormData();
+      formData.append("file", file);
 
-      const response = await fetch("http://localhost:6000/process/document", {
+      const response = await fetch("http://localhost:8080/process/document", {
         method: "POST",
         body: formData,
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json()
-      console.log("File processed successfully:", result)
+      const result = await response.json();
+      console.log("File processed successfully:", result);
       // You can add further logic here to handle the successful response
     } catch (error) {
-      console.error("Error processing file:", error)
-      setError("Failed to submit CMR file/image. Try again please.")
+      console.error("Error processing file:", error);
+      setError("Failed to submit CMR file/image. Try again please.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleClearFile = () => {
-    setFile(null)
-    setFileCleared(true)
+    setFile(null);
+    setFileCleared(true);
     // Reset the file input
-    const fileInput = document.getElementById("file-upload") as HTMLInputElement
-    if (fileInput) fileInput.value = ""
+    const fileInput = document.getElementById(
+      "file-upload"
+    ) as HTMLInputElement;
+    if (fileInput) fileInput.value = "";
     // Add a small delay before resetting the button state
-    setTimeout(() => setFileCleared(false), 300)
-  }
+    setTimeout(() => setFileCleared(false), 300);
+  };
 
   return (
     <div className="w-full text-white">
       <div className="w-full max-w-5xl mx-auto p-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-serif">Exclude Addresses from East Cost West</h1>
+          <h1 className="text-3xl font-serif">
+            Exclude Addresses from East Cost West
+          </h1>
         </div>
 
         <Tabs className="w-full">
@@ -97,7 +101,9 @@ export default function DocumentUpload() {
             <div>
               <h2 className="text-2xl font-serif mb-4">Upload a CSV</h2>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-gray-400">Upload a .csv file with the following sample information</p>
+                <p className="text-gray-400">
+                  Upload a .csv file with the following sample information
+                </p>
                 <Button
                   variant="link"
                   className="text-[#9EFF00] hover:text-[#9EFF00]/80 font-medium rounded-full"
@@ -118,8 +124,17 @@ export default function DocumentUpload() {
               <table className="min-w-full">
                 <thead>
                   <tr>
-                    {["first name", "last name", "email", "shipping address 1", "shipping address 2"].map((header) => (
-                      <th key={header} className="px-4 py-2 text-left text-gray-400 font-normal">
+                    {[
+                      "first name",
+                      "last name",
+                      "email",
+                      "shipping address 1",
+                      "shipping address 2",
+                    ].map((header) => (
+                      <th
+                        key={header}
+                        className="px-4 py-2 text-left text-gray-400 font-normal"
+                      >
                         {header}
                       </th>
                     ))}
@@ -139,7 +154,9 @@ export default function DocumentUpload() {
 
             <div
               className={`border-2 border-dashed rounded-[32px] p-10 text-center transition-all ${
-                dragActive ? "border-[#9EFF00] bg-[#9EFF00]/10" : "border-zinc-800"
+                dragActive
+                  ? "border-[#9EFF00] bg-[#9EFF00]/10"
+                  : "border-zinc-800"
               }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -154,13 +171,18 @@ export default function DocumentUpload() {
                 accept=".pdf,.jpg,.jpeg,.png,.csv"
                 onChange={handleChange}
               />
-              <label htmlFor="file-upload" className="flex flex-col items-center gap-3 cursor-pointer">
+              <label
+                htmlFor="file-upload"
+                className="flex flex-col items-center gap-3 cursor-pointer"
+              >
                 <div className="p-4 bg-zinc-900 rounded-full">
                   <Upload className="h-6 w-6 text-[#9EFF00]" />
                 </div>
                 <div className="text-gray-400">
                   {file ? (
-                    <span className="text-[#9EFF00] font-medium">{file.name}</span>
+                    <span className="text-[#9EFF00] font-medium">
+                      {file.name}
+                    </span>
                   ) : (
                     <>Drag & Drop your CMR file or CMR image</>
                   )}
@@ -171,7 +193,9 @@ export default function DocumentUpload() {
             <div className="flex justify-end space-x-4">
               <Button
                 className={`${
-                  fileCleared ? "bg-white text-red-500" : "bg-red-500 text-white"
+                  fileCleared
+                    ? "bg-white text-red-500"
+                    : "bg-red-500 text-white"
                 } hover:bg-red-600 hover:text-white px-8 rounded-full text-lg h-12 transition-all`}
                 onClick={handleClearFile}
                 disabled={!file}
@@ -183,7 +207,11 @@ export default function DocumentUpload() {
                 disabled={!file || isSubmitting}
                 onClick={handleSubmit}
               >
-                {isSubmitting ? "SUBMITTING..." : isSubmitting === false && file ? "DONE" : "SUBMIT"}
+                {isSubmitting
+                  ? "SUBMITTING..."
+                  : isSubmitting === false && file
+                  ? "DONE"
+                  : "SUBMIT"}
               </Button>
             </div>
           </TabsContent>
@@ -206,6 +234,5 @@ export default function DocumentUpload() {
         </div>
       )}
     </div>
-  )
+  );
 }
-
